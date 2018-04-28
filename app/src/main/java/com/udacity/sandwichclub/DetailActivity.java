@@ -6,26 +6,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
+import java.util.List;
 
-import org.w3c.dom.Text;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
 
+    //Set all Textviews using BindView in a list to be later implemented
+    @BindViews({R.id.main_name_tv, R.id.also_known_tv, R.id.ingredients_tv,
+            R.id.origin_tv, R.id.description_tv})
+    List<TextView> sandwichViews;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        //set all the text views accordingly once oncreate (app start) starts
+        ButterKnife.bind(this);
+
         ImageView ingredientsIv = findViewById(R.id.image_iv);
-
-
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -48,7 +55,7 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        populateUI(sandwich);
+        populateUI(sandwich, sandwichViews);
         Picasso.with(this)
                 .load(sandwich.getImage())
                 .into(ingredientsIv);
@@ -63,23 +70,18 @@ public class DetailActivity extends AppCompatActivity {
     /**
      *
      * @param sandwich class that contains the data to be used for populating the xml
-     *
+     * @param sandwichViews contains mainName, alsoKnownAs, Ingredients, origin, and description
+     *                      TextViews in that order to be called and then place the necessary
+     *                      Info
      */
-
-    private void populateUI(Sandwich sandwich) {
-        //create all TextViews and reference the xml
-        TextView mainNameTV = findViewById(R.id.main_name_tv);
-        TextView alsoKnownTV = findViewById(R.id.also_known_tv);
-        TextView ingredientsTV = findViewById(R.id.ingredients_tv);
-        TextView originTV = findViewById(R.id.origin_tv);
-        TextView descriptionTV = findViewById(R.id.description_tv);
-
+    private void populateUI(Sandwich sandwich, List<TextView> sandwichViews) {
+        //place each view accordingly to each view for the sandwich details
         //set all data based on the methods from Sandwich class
-        mainNameTV.setText(sandwich.getMainName());
-        alsoKnownTV.setText(sandwich.getAlsoKnownAs().toString());
-        ingredientsTV.setText(sandwich.getIngredients().toString());
-        originTV.setText(sandwich.getPlaceOfOrigin());
-        descriptionTV.setText(sandwich.getDescription());
-
+        sandwichViews.get(0).setText(sandwich.getMainName());
+        sandwichViews.get(1).setText(sandwich.getAlsoKnownAs().toString());
+        sandwichViews.get(2).setText(sandwich.getIngredients().toString());
+        sandwichViews.get(3).setText(sandwich.getPlaceOfOrigin());
+        sandwichViews.get(4).setText(sandwich.getDescription());
     }
 }
+
